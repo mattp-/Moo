@@ -44,6 +44,9 @@ use lib "t/lib";
      eat_curry => [ yum => 'Curry!' ],
   });
   has foo5 => ( is => 'ro', handles => 'ExtRobot' );
+  has foo6 => ( is => 'rw',
+                handles => { foobot => '${\\Baz->can("beep")}'},
+                default => sub { 0 } );
 }
 
 my $bar = Bar->new(
@@ -61,5 +64,7 @@ is $bar->smash, 'smash', 'handles works for a role';
 is $bar->beep, 'beep', 'handles loads roles';
 
 is $bar->eat_curry, 'Curry!', 'handles works for currying';
+
+is $bar->foobot, 'beep', 'asserter checks for definedness, not truth';
 
 done_testing;

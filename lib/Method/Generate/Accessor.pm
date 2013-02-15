@@ -163,9 +163,14 @@ sub generate_method {
   }
   if (my $asserter = $spec->{asserter}) {
     $self->{captures} = {};
+
+    my $code = "my \$get = do {\n"
+               .$self->_generate_get($name, $spec)
+               ."};"
+               .qq!defined(\$get) ? \$get : die "Attempted to access '${name}' but it is not set"!;
+
     $methods{$asserter} =
-      quote_sub "${into}::${asserter}" =>
-        'do { '.$self->_generate_get($name, $spec).qq! }||die "Attempted to access '${name}' but it is not set"!,
+      quote_sub "${into}::${asserter}" => $code,
         delete $self->{captures}
       ;
   }
